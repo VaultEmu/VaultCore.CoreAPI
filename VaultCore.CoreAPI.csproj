@@ -10,7 +10,7 @@
         <PackageId>VaultCore.CoreAPI</PackageId>
         <Authors>Chris Butler</Authors>
         <PackageDescription>Library containing interfaces to create Vault Emulation cores</PackageDescription>
-        <RepositoryUrl>https://github.com/VaultEmu/VaultCoreAPI</RepositoryUrl>
+        <RepositoryUrl>https://github.com/VaultEmu/VaultCore.CoreAPI</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
     </PropertyGroup>
 
