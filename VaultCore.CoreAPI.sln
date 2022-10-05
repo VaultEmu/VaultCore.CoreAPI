@@ -6,7 +6,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{F11B9884
 		Tools\BuildAndUploadNugetPackage.bat = Tools\BuildAndUploadNugetPackage.bat
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VaultCoreAPI", "VaultCoreAPI.csproj", "{79F83AF0-B4B2-4BF0-8485-B04578B49319}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VaultCore.CoreAPI", "VaultCore.CoreAPI.csproj", "{79F83AF0-B4B2-4BF0-8485-B04578B49319}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

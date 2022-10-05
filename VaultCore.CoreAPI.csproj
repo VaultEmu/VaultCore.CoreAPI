@@ -4,13 +4,13 @@
         <TargetFramework>net6.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <RootNamespace>Vault</RootNamespace>
+        <RootNamespace>VaultCore.CoreAPI</RootNamespace>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-        <PackageId>VaultCoreAPI</PackageId>
+        <PackageId>VaultCore.CoreAPI</PackageId>
         <Authors>Chris Butler</Authors>
         <PackageDescription>Library containing interfaces to create Vault Emulation cores</PackageDescription>
-        <RepositoryUrl>https://github.com/Avalix/Vault</RepositoryUrl>
+        <RepositoryUrl>https://github.com/VaultEmu/VaultCoreAPI</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
     </PropertyGroup>
 
