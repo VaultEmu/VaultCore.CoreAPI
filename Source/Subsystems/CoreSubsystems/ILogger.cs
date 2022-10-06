@@ -1,4 +1,4 @@
-﻿namespace Vault;
+﻿namespace VaultCore.CoreAPI;
 
 //Simple interface for logging
 public interface ILogger : ISubsystem

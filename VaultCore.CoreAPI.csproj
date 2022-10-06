@@ -6,7 +6,6 @@
         <Nullable>enable</Nullable>
         <RootNamespace>VaultCore.CoreAPI</RootNamespace>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <PackageId>VaultCore.CoreAPI</PackageId>
         <Authors>Chris Butler</Authors>
         <PackageDescription>Library containing interfaces to create Vault Emulation cores</PackageDescription>
@@ -19,11 +18,6 @@
         <PrivateAssets>all</PrivateAssets>
         <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       </PackageReference>
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Source\Systems" />
-      <Folder Include="Source\Systems\Graphics\Utils" />
     </ItemGroup>
 
 </Project>

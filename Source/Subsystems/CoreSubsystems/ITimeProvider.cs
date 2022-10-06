@@ -1,4 +1,4 @@
-namespace Vault;
+namespace VaultCore.CoreAPI;
 
 //Subsystem that can provide time related functionality
 public interface ITimeProvider : ISubsystem
@@ -10,7 +10,7 @@ public interface ITimeProvider : ISubsystem
     ulong HighResolutionTimerSampleFrequency { get; }
     
     //The delta time of the current frame (Seconds)
-    float DeltaTime { get; }
+    double DeltaTime { get; }
     
     //The current fps
     float Fps { get; }
@@ -22,5 +22,5 @@ public interface ITimeProvider : ISubsystem
     float AverageFps { get; }
     
     //The total seconds since the program started 
-    float TimeSinceStartup { get; }
+    double TimeSinceStartup { get; }
 }
