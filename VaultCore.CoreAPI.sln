@@ -6,7 +6,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{F11B9884
 		Tools\BuildAndUploadNugetPackage.bat = Tools\BuildAndUploadNugetPackage.bat
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VaultCore.CoreAPI", "VaultCore.CoreAPI.csproj", "{79F83AF0-B4B2-4BF0-8485-B04578B49319}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VaultCore.CoreAPI", "CoreAPI/VaultCore.CoreAPI.csproj", "{79F83AF0-B4B2-4BF0-8485-B04578B49319}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VaultCore.BuildTaskLib", "BuildTaskLib\VaultCore.BuildTaskLib.csproj", "{76754618-F43C-49B4-93E4-BE2F9D586770}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -18,6 +20,8 @@ Global
 		{79F83AF0-B4B2-4BF0-8485-B04578B49319}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{79F83AF0-B4B2-4BF0-8485-B04578B49319}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{79F83AF0-B4B2-4BF0-8485-B04578B49319}.Release|Any CPU.Build.0 = Release|Any CPU
+		{76754618-F43C-49B4-93E4-BE2F9D586770}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{76754618-F43C-49B4-93E4-BE2F9D586770}.Release|Any CPU.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 	EndGlobalSection

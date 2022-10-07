@@ -1,7 +1,7 @@
 namespace VaultCore.CoreAPI;
 
-//Subsystem that can provide time related functionality
-public interface ITimeProvider : ISubsystem
+//Feature that can provide time related functionality. Should be provided by all frontends for basic timing logic
+public interface ITimeProvider : IFeature
 {
     //Samples the High Resolution Timer and returns the number of ticks since program start
     ulong HighResolutionTimerSample { get; }

@@ -1,7 +1,7 @@
 ﻿namespace VaultCore.CoreAPI;
 
-//Simple interface for logging
-public interface ILogger : ISubsystem
+//Simple interface for a logging feature. Should be provided by all frontends for basic core logging
+public interface ILogger : IFeature
 {
     //Logs general message
     public void Log(string message);

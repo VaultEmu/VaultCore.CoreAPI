@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <UsingTask TaskName="VaultCore.CoreAPI.JsonManifestGenerationBuildTask"
+               AssemblyFile="$(MSBuildThisFileDirectory)..\tasks\VaultCore.BuildTaskLib.dll"/>
+
+    <Target Name="Create Json Manifest" AfterTargets="Build">
+        <JsonManifestGenerationBuildTask DllOutputPath="$(TargetPath)"/>
+    </Target>
+</Project>

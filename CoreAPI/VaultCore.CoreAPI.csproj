@@ -1,0 +1,42 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <Deterministic>true</Deterministic>
+        <TargetFramework>net6.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <RootNamespace>VaultCore.CoreAPI</RootNamespace>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <PackageId>VaultCore.CoreAPI</PackageId>
+        <Authors>Chris Butler</Authors>
+        <PackageDescription>Library containing interfaces to create Vault Emulation cores</PackageDescription>
+        <RepositoryUrl>https://github.com/VaultEmu/VaultCore.CoreAPI</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <DebugSymbols>true</DebugSymbols>
+        <IncludeSymbols>true</IncludeSymbols>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+        <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0-*" PrivateAssets="All" />
+        <PackageReference Include="MinVer" Version="4.2.0">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+    </ItemGroup>
+    
+    <ItemGroup>
+        <None Include="PackageAssets\build\**" Pack="True" PackagePath="build\" />
+        <None Include="PackageAssets\buildMultiTargeting\**" Pack="True" PackagePath="buildMultiTargeting\" />
+    </ItemGroup>
+
+    <Target Name="IncludeBuiltTaskLib" BeforeTargets="BeforeBuild">
+        <MSBuild Projects="..\BuildTaskLib\VaultCore.BuildTaskLib.csproj" Targets="Restore"/>
+        <MSBuild Projects="..\BuildTaskLib\VaultCore.BuildTaskLib.csproj" Targets="Build"/>
+        <Message Importance="high" Text="BuildTaskLib Built"/>
+        <ItemGroup>
+            <None Include="$(ProjectDir)..\PackagingOutput\tasks\**" Pack="True" PackagePath="tasks\" />
+        </ItemGroup>
+    </Target>
+</Project>
