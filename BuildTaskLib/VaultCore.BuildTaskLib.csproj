@@ -19,16 +19,4 @@
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
     </ItemGroup>
-
-
-    <Target Name="CopyLibsOver" BeforeTargets="AfterBuild">
-        <ItemGroup>
-            <BuildOutput Include="$(TargetDir)\*.*"/>
-        </ItemGroup>
-        <RemoveDir Directories="$(ProjectDir)..\PackagingOutput\tasks" 
-                   Condition="Exists('$(ProjectDir)..\PackagingOutput\tasks')"/>
-        <Copy SourceFiles="@(BuildOutput)" DestinationFolder="$(ProjectDir)..\PackagingOutput\tasks" />
-    </Target>
-
-
 </Project>
