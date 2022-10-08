@@ -1,6 +1,10 @@
 <?xml version="1.0"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-    <UsingTask TaskName="VaultCore.CoreAPI.JsonManifestGenerationBuildTask"
+    <PropertyGroup>
+        <EnableDynamicLoading>true</EnableDynamicLoading>
+    </PropertyGroup>
+    
+    <UsingTask TaskName="VaultCore.BuildTasks.JsonManifestGenerationBuildTask"
                AssemblyFile="$(MSBuildThisFileDirectory)..\tasks\VaultCore.BuildTaskLib.dll"/>
 
     <Target Name="Create Json Manifest" AfterTargets="Build">

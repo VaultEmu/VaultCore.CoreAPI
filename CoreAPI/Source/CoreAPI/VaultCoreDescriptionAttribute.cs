@@ -1,5 +1,4 @@
 ﻿using System.Reflection;
-using VaultCore.CoreAPI;
 
 namespace VaultCoreAPI;
 
@@ -21,7 +20,7 @@ public class VaultCoreDescriptionAttribute : Attribute
     {
         get
         {
-            if(_useAssemblyVersionForCoreVersion)
+            if(_useAssemblyVersionForCoreVersion == false)
             {
                 return _customVersion;
             }
@@ -37,7 +36,7 @@ public class VaultCoreDescriptionAttribute : Attribute
     }
 
     //Provides a core description for the frontend. Uses the assembly version for the core version
-    public VaultCoreDescriptionAttribute(string name, string description, string emulatedSystemName, List<IFeature>? requiredFeatures = null) 
+    public VaultCoreDescriptionAttribute(string name, string description, string emulatedSystemName) 
     {
         _description = description;
         _name = name;
