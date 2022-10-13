@@ -14,10 +14,10 @@ public interface IVaultCore
     //If set to 0, then no limit is placed on the updates
     int maxNumUpdates => 0;
     
-    //Called when the Core is created to initialise it. You can use ISubsystemResolver to 
+    //Called when the Core is created to initialise it. You can use IFeatureResolver to 
     //retrieve subsystems from the frontend that are needed by this core.
     //If Initialization fails, or a needed subsystem cannot be resolved, throw an exception 
-    void Initialise(ISubsystemResolver subsystemResolver);
+    void Initialise(IFeatureResolver featureResolver);
     
     //Called every frame to update the Core. Update rate can be controlled with
     void Update();

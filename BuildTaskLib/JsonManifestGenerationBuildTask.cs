@@ -52,7 +52,7 @@ public class JsonManifestGenerationBuildTask : Microsoft.Build.Utilities.Task
                 return false;
             }
 
-            Log.LogMessage(MessageImportance.High, $"Creating Json Manifest for {Path.GetFileName(DllOutputPath)}");
+            Log.LogMessage(MessageImportance.High, $"Creating Json Manifest for Cores in {Path.GetFileName(DllOutputPath)}...");
 
             var jsonManifestOutput = Path.Combine(
                 Path.GetDirectoryName(DllOutputPath)!,
@@ -69,13 +69,15 @@ public class JsonManifestGenerationBuildTask : Microsoft.Build.Utilities.Task
 
             if(coreTypes.Count == 0)
             {
-                Log.LogError($"No classes implementing {I_VAULT_CORE_INTERFACE_NAME} found in assembly");
-                return false;
+                Log.LogMessage(MessageImportance.High, $"No classes implementing {I_VAULT_CORE_INTERFACE_NAME} found.");
+                return true;
             }
 
+            Log.LogMessage(MessageImportance.High, $"{coreTypes.Count} Core(s) found. Validating cores and generating manifest...");
+            
             foreach (var coreType in coreTypes)
             {
-                Log.LogMessage(MessageImportance.High, $"Found Core: {coreType.Name}");
+                Log.LogMessage(MessageImportance.High, $"Processing Core: {coreType.Name}");
 
                 var descriptionAttribute = coreType.GetCustomAttributes()
                     .FirstOrDefault(p => p.GetType().Name == VAULT_CORE_DESCRIPTION_ATTRIBUTE_NAME);
@@ -96,31 +98,30 @@ public class JsonManifestGenerationBuildTask : Microsoft.Build.Utilities.Task
 
                 if(coreName == null)
                 {
-                    Log.LogError($"Unable to get Core Name from {VAULT_CORE_DESCRIPTION_ATTRIBUTE_NAME} Attribute");
+                    Log.LogError($"Unable to get Core Name from {VAULT_CORE_DESCRIPTION_ATTRIBUTE_NAME} Attribute for core {coreType.Name}");
                     continue;
                 }
 
                 if(coreDescription == null)
                 {
-                    Log.LogError($"Unable to get Core Description from {VAULT_CORE_DESCRIPTION_ATTRIBUTE_NAME} Attribute");
+                    Log.LogError($"Unable to get Core Description from {VAULT_CORE_DESCRIPTION_ATTRIBUTE_NAME} Attribute for core {coreType.Name}");
                     continue;
                 }
 
                 if(coreEmulatedSystemName == null)
                 {
-                    Log.LogError($"Unable to get Core Emulated System Name from {VAULT_CORE_DESCRIPTION_ATTRIBUTE_NAME} Attribute");
+                    Log.LogError($"Unable to get Core Emulated System Name from {VAULT_CORE_DESCRIPTION_ATTRIBUTE_NAME} Attribute for core {coreType.Name}");
                     continue;
                 }
 
                 if(coreVersion == null)
                 {
-                    Log.LogError($"Unable to get Core Version from {VAULT_CORE_DESCRIPTION_ATTRIBUTE_NAME} Attribute");
+                    Log.LogError($"Unable to get Core Version from {VAULT_CORE_DESCRIPTION_ATTRIBUTE_NAME} Attribute for core {coreType.Name}");
                     continue;
                 }
 
                 codeEntryData.Add(new CoreEntry(coreName, coreDescription,
                     coreEmulatedSystemName, coreVersion));
-                
 
                 if(Log.HasLoggedErrors)
                 {
