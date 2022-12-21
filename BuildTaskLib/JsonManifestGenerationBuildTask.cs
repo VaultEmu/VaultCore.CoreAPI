@@ -18,13 +18,15 @@ public class JsonManifestGenerationBuildTask : Microsoft.Build.Utilities.Task
         public string Description;
         public string EmulatedSystemName;
         public string Version;
+        public string CoreClassName;
 
-        public CoreEntry(string name, string description, string emulatedSystemName, string version)
+        public CoreEntry(string name, string description, string emulatedSystemName, string version, string coreClassName)
         {
             Name = name;
             Description = description;
             EmulatedSystemName = emulatedSystemName;
             Version = version;
+            CoreClassName = coreClassName;
         }
     }
 
@@ -121,7 +123,7 @@ public class JsonManifestGenerationBuildTask : Microsoft.Build.Utilities.Task
                 }
 
                 codeEntryData.Add(new CoreEntry(coreName, coreDescription,
-                    coreEmulatedSystemName, coreVersion));
+                    coreEmulatedSystemName, coreVersion, coreType.Name));
 
                 if(Log.HasLoggedErrors)
                 {
