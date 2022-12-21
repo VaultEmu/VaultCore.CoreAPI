@@ -1,0 +1,22 @@
+namespace VaultCore.CoreAPI;
+
+/// <summary>
+/// Feature that can provide High Resolution timer related functionality to cores
+/// </summary>
+public interface IHighResTimer : IFeature
+{
+    /// <summary>
+    /// Samples the High Resolution Timer and returns the number of ticks since program start
+    /// </summary>
+    ulong HighResolutionTimerSample { get; }
+    
+    /// <summary>
+    /// Returns number of ticks per second of the High Resolution Timer
+    /// </summary>
+    ulong HighResolutionTimerSampleFrequency { get; }
+    
+    /// <summary>
+    /// The total seconds since the program started 
+    /// </summary>
+    double TimeSinceStartup { get; }
+}

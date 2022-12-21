@@ -32,11 +32,11 @@
     </ItemGroup>
 
     <Target Name="IncludeBuiltTaskLib" BeforeTargets="BeforeBuild">
-        <MSBuild Projects="..\BuildTaskLib\VaultCore.BuildTaskLib.csproj" Targets="Restore"/>
+        <MSBuild Projects="..\BuildTaskLib\VaultCore.BuildTaskLib.csproj" Targets="Restore" />
         <MSBuild Projects="..\BuildTaskLib\VaultCore.BuildTaskLib.csproj" Targets="Build">
             <Output TaskParameter="TargetOutputs" ItemName="BuildOutput" />
         </MSBuild>
-        <Message Importance="high" Text="BuildTaskLib Built: Target Folder -> %(BuildOutput.RootDir)%(BuildOutput.Directory)"/>
+        <Message Importance="high" Text="BuildTaskLib Built: Target Folder -&gt; %(BuildOutput.RootDir)%(BuildOutput.Directory)" />
         <ItemGroup>
             <None Include="%(BuildOutput.RootDir)%(BuildOutput.Directory)\**" Pack="True" PackagePath="tasks\" />
         </ItemGroup>

@@ -1,25 +1,38 @@
 ﻿namespace VaultCore.CoreAPI;
 
-//Main Interface to implement to create an emulation core that vault can use
+/// <summary>
+/// Main Interface to implement to create an emulation core that vault can use
+/// </summary>
 public interface IVaultCore
 {
-    //Sets the fixed update in Ms for the core to be updated. If set to 0 then the core will be updated as fast as possible
-    //If set low, the frontend may call update multiple times to catch up.
+    /// <summary>
+    /// Sets the fixed rate in Ms at which the core should have update() called. If set to 0 then the core will be updated as fast as possible
+    /// If set to low value, the frontend may call update multiple times to catch up.
+    /// </summary>
     float UpdateRateMs => 0;
     
-    //If UpdateRateMs is set, then this controls the number of Update calls the frontend can call to catch up if needed.
-    //This can stop the classic "Spiral of death" if your updates take longer then the time needed
-    //If set to 0, then no limit is placed on the updates
+    /// <summary>
+    /// If UpdateRateMs is set to a none-zero value, then this controls the number of Update calls the frontend can call to catch up if needed.
+    /// This can stop the classic "Spiral of death" if your updates take longer then the time needed
+    /// If set to 0, then no limit is placed on the updates
+    /// </summary>
     int maxNumUpdates => 0;
     
-    //Called when the Core is created to initialise it. You can use IFeatureResolver to 
-    //retrieve subsystems from the frontend that are needed by this core.
-    //If Initialization fails, or a needed subsystem cannot be resolved, throw an exception 
+    /// <summary>
+    /// Called when the Core is created to initialise it.
+    /// If Initialization fails, or a needed subsystem cannot be resolved, throw an exception 
+    /// </summary>
+    /// <param name="featureResolver">Use this IFeatureResolve to retrieve subsystems from the frontend that are needed by this core.</param>
     void Initialise(IFeatureResolver featureResolver);
     
-    //Called every frame to update the Core. Update rate can be controlled with
-    void Update();
-    
-    //Called before the core is destroyed to allow the core to clean up
+    /// <summary>
+    /// Called to update the Core. Will be called every frame by the frontend unless UpdateRateMs is set to provide a fixed update rate
+    /// </summary>
+    /// <param name="deltaTime">time since last update (will be a fixed value of (1 / UpdateRateMs) if UpdateRateMs is set to a non-zero value)</param>
+    void Update(float deltaTime);
+
+    /// <summary>
+    /// Called before the core is destroyed to allow the core to clean up
+    /// </summary>
     void ShutDown();
 }
