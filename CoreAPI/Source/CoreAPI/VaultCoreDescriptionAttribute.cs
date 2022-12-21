@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 
-namespace VaultCoreAPI;
+namespace VaultCore.CoreAPI;
 
 //Use this attribute to describe the core to a frontend
 [AttributeUsage( AttributeTargets.Class, Inherited = false)]
