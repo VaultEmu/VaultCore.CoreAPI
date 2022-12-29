@@ -9,8 +9,9 @@ namespace VaultCore.BuildTasks;
 public class JsonManifestGenerationBuildTask : Microsoft.Build.Utilities.Task
 {
     private const string VAULT_CORE_BASE_CLASS_NAME = "VaultCoreBase";
-    private const string VAULT_CORE_FEATURE_BASE_INTERFACE_NAME = "IVaultCoreFeature`1";
+    private const string VAULT_CORE_FEATURE_INTERFACE_NAME = "IVaultCoreFeature";
     private const string VAULT_CORE_DESCRIPTION_ATTRIBUTE_NAME = "VaultCoreDescriptionAttribute";
+    private const string VAULT_CORE_USED_FEATURES_ATTRIBUTE_NAME = "VaultCoreUsesFeatureAttribute";
     
     [Serializable]
     private class CoreEntry
@@ -83,6 +84,49 @@ public class JsonManifestGenerationBuildTask : Microsoft.Build.Utilities.Task
             foreach (var coreType in coreTypes)
             {
                 Log.LogMessage(MessageImportance.High, $"Processing Core: {coreType.Name}");
+                
+                var coreFeatureAttributes = coreType.GetCustomAttributes()
+                    .Where(p => p.GetType().Name == VAULT_CORE_USED_FEATURES_ATTRIBUTE_NAME)
+                    .ToList();
+                
+                var coreFeaturesUsed = Array.Empty<string>();
+
+                if(coreFeatureAttributes.Count == 0)
+                {
+                    Log.LogMessage($"Unable to find {VAULT_CORE_USED_FEATURES_ATTRIBUTE_NAME} Attribute on core type {coreType}. This may be intended " +
+                                   $"if the core uses no features");
+                }
+                else
+                {
+                    var coreFeaturesUsedAttributeType = coreFeaturesUsed[0].GetType();
+                    
+                    List<string> coreFeatureTypeNames = new List<string>();
+                    
+                    foreach(var coreFeatureAttribute in coreFeatureAttributes)
+                    {
+                        var coreFeatureTypes = coreFeaturesUsedAttributeType.GetProperty("Name")!.GetValue(coreFeatureAttribute) as Type[];
+                        
+                        if(coreFeatureTypes == null)
+                        {
+                            Log.LogError($"Attribute {VAULT_CORE_USED_FEATURES_ATTRIBUTE_NAME} returned null feature types for {coreType}. Is it set correctly?");
+                            continue;
+                        }
+                        
+                        foreach(var coreFeature in coreFeatureTypes)
+                        {
+                            if(coreFeature.GetInterface(VAULT_CORE_FEATURE_INTERFACE_NAME) != null)
+                            {
+                                Log.LogError($"Attribute {VAULT_CORE_USED_FEATURES_ATTRIBUTE_NAME} returned feature type {coreFeature} that does not inherit " +
+                                             $"from {VAULT_CORE_FEATURE_INTERFACE_NAME} for {coreType}.");
+                                continue;
+                            }
+                            
+                            coreFeatureTypeNames.Add(coreFeature.Name);
+                        }
+                    }
+                    
+                    coreFeaturesUsed = coreFeatureTypeNames.Distinct().ToArray();
+                }
 
                 var descriptionAttribute = coreType.GetCustomAttributes()
                     .FirstOrDefault(p => p.GetType().Name == VAULT_CORE_DESCRIPTION_ATTRIBUTE_NAME);
@@ -93,22 +137,12 @@ public class JsonManifestGenerationBuildTask : Microsoft.Build.Utilities.Task
                     continue;
                 }
 
-                var attributeType = descriptionAttribute.GetType();
-                
-                var coreFeatureInterfaces = coreType.GetInterfaces()
-                    .Where(x =>
-                    {
-                        return x.GetInterfaces()
-                            .Any(y => y.IsGenericType && y.GetGenericTypeDefinition().Name == VAULT_CORE_FEATURE_BASE_INTERFACE_NAME);
-                    })
-                    .Select(x => x.Name)
-                    .ToArray();
-                
-                var coreName = attributeType.GetProperty("Name")!.GetValue(descriptionAttribute) as string;
-                var coreDescription = attributeType.GetProperty("Description")!.GetValue(descriptionAttribute) as string;
+                var descriptionAttributeType = descriptionAttribute.GetType();
+                var coreName = descriptionAttributeType.GetProperty("Name")!.GetValue(descriptionAttribute) as string;
+                var coreDescription = descriptionAttributeType.GetProperty("Description")!.GetValue(descriptionAttribute) as string;
                 var coreEmulatedSystemName =
-                    attributeType.GetProperty("EmulatedSystemName")!.GetValue(descriptionAttribute) as string;
-                var coreVersion = attributeType.GetProperty("Version")!.GetValue(descriptionAttribute) as string;
+                    descriptionAttributeType.GetProperty("EmulatedSystemName")!.GetValue(descriptionAttribute) as string;
+                var coreVersion = descriptionAttributeType.GetProperty("Version")!.GetValue(descriptionAttribute) as string;
 
                 if(coreName == null)
                 {
@@ -135,7 +169,7 @@ public class JsonManifestGenerationBuildTask : Microsoft.Build.Utilities.Task
                 }
 
                 codeEntryData.Add(new CoreEntry(coreName, coreDescription,
-                    coreEmulatedSystemName, coreVersion, coreType.Name, coreFeatureInterfaces));
+                    coreEmulatedSystemName, coreVersion, coreType.Name, coreFeaturesUsed));
 
                 if(Log.HasLoggedErrors)
                 {

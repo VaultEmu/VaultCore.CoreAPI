@@ -41,14 +41,14 @@ public abstract class VaultCoreBase
     /// </summary>
     protected abstract void ShutDownImpl();
 
-    private readonly Dictionary<Type, IVaultCoreFeatureApi> _featureApiImpl = new();
+    private readonly Dictionary<Type, IVaultCoreFeature> _featureApiImpl = new();
 
     /// <summary>
     ///     Called when the Core is created to initialise it.
     /// </summary>
-    public void Initialise(IVaultCoreFeatureApiResolver featureApiResolver)
+    public void Initialise(IVaultCoreFeatureResolver featureResolver)
     {
-        AcquireCoreFeatureApiImplementations(featureApiResolver);
+        AcquireCoreFeatureApiImplementations(featureResolver);
         InitialiseImpl();
     }
 
@@ -76,12 +76,12 @@ public abstract class VaultCoreBase
     /// <summary>
     ///     Gets the Api Implementation for a feature this core uses
     /// </summary>
-    /// <typeparam name="T">Type of Api implementation to get (should be a type inheriting from IVaultCoreFeatureApi)</typeparam>
+    /// <typeparam name="T">Type of Api implementation to get (should be a type inheriting from IVaultCoreFeature)</typeparam>
     /// <returns>Api implementation</returns>
     /// <exception cref="InvalidOperationException">
     ///     Thrown if trying to get Api Implementation for one not acquired when core is initialized
     /// </exception>
-    public T GetFeatureApi<T>() where T : IVaultCoreFeatureApi
+    public T GetFeatureApi<T>() where T : IVaultCoreFeature
     {
         if(_featureApiImpl.TryGetValue(typeof(T), out var apiImpl) == false)
         {
@@ -94,40 +94,32 @@ public abstract class VaultCoreBase
     /// <summary>
     ///     Attempts to acquire all the api implementations needed for the feature of this core
     /// </summary>
-    /// <param name="featureApiResolver">feature api resolver class that can get an api implementation from the frontend</param>
+    /// <param name="featureResolver">feature api resolver class that can get an api implementation from the frontend</param>
     /// <exception cref="MissingCoreFeatureApiException">
-    ///     Thrown if featureApiResolver is unable to acquire an api implementation
+    ///     Thrown if featureResolver is unable to acquire an api implementation
     /// </exception>
-    private void AcquireCoreFeatureApiImplementations(IVaultCoreFeatureApiResolver featureApiResolver)
+    private void AcquireCoreFeatureApiImplementations(IVaultCoreFeatureResolver featureResolver)
     {
         var coreFeatureInterfaces = GetType().GetInterfaces()
-            .Where(x => { return x.GetInterfaces().Any(y => y.IsGenericType && y.GetGenericTypeDefinition() == typeof(IVaultCoreFeature<>)); })
+            .Where(x => x.IsAssignableTo(typeof(IVaultCoreFeature)) && x != typeof(IVaultCoreFeature))
             .ToList();
 
         foreach (var featureInterface in coreFeatureInterfaces)
         {
-            var featureApiInterfaceTypes = featureInterface.GetInterfaces()
-                .Where(x => x.IsGenericType && x.GetGenericTypeDefinition() == typeof(IVaultCoreFeature<>))
-                .Select(x => x.GetGenericArguments().First())
-                .ToList();
-
-            foreach (var featureApiInterfaceType in featureApiInterfaceTypes)
+            if(_featureApiImpl.ContainsKey(featureInterface))
             {
-                if(_featureApiImpl.ContainsKey(featureApiInterfaceType))
-                {
-                    continue;
-                }
-
-                var featureApiImpl = featureApiResolver.GetCoreFeatureApiImplementation(featureApiInterfaceType);
-
-                if(featureApiImpl == null)
-                {
-                    throw new MissingCoreFeatureApiException($"Unable to acquire api implementation needed for Core feature {featureInterface}: " +
-                                                             $"Missing API implementation interface type - {featureApiInterfaceType}");
-                }
-
-                _featureApiImpl.Add(featureApiInterfaceType, featureApiImpl);
+                continue;
             }
+
+            var featureImpl = featureResolver.GetCoreFeatureImplementation(featureInterface);
+
+            if(featureImpl == null)
+            {
+                throw new MissingCoreFeatureApiException($"Unable to acquire api implementation needed for Core feature {featureInterface}");
+            }
+
+            _featureApiImpl.Add(featureInterface, featureImpl);
+            
         }
     }
 }

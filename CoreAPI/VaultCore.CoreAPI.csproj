@@ -16,6 +16,7 @@
         <IncludeSymbols>true</IncludeSymbols>
         <SymbolPackageFormat>snupkg</SymbolPackageFormat>
         <EmbedUntrackedSources>true</EmbedUntrackedSources>
+        <LangVersion>10</LangVersion>
     </PropertyGroup>
 
     <ItemGroup>
@@ -29,10 +30,6 @@
     <ItemGroup>
         <None Include="PackageAssets\build\**" Pack="True" PackagePath="build\" />
         <None Include="PackageAssets\buildMultiTargeting\**" Pack="True" PackagePath="buildMultiTargeting\" />
-    </ItemGroup>
-    
-    <ItemGroup>
-      <Folder Include="Source\FrontendFeatures" />
     </ItemGroup>
 
     <Target Name="IncludeBuiltTaskLib" BeforeTargets="BeforeBuild">
