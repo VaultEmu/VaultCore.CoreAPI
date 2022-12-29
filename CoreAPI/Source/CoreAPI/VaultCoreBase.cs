@@ -132,7 +132,7 @@ public abstract class VaultCoreBase
         
         foreach(var feature in _featureImpl)
         {
-            feature.Value.OnCoreAcquiresFeature(GetType(), feature.Key, coreFeatureInterfaces);
+            feature.Value.OnCoreReleasesFeature(GetType(), feature.Key, coreFeatureInterfaces);
         }
         
         _featureImpl.Clear();
