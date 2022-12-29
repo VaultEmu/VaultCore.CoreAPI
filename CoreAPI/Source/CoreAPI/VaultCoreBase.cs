@@ -41,14 +41,14 @@ public abstract class VaultCoreBase
     /// </summary>
     protected abstract void ShutDownImpl();
 
-    private readonly Dictionary<Type, IVaultCoreFeature> _featureApiImpl = new();
+    private readonly Dictionary<Type, IVaultCoreFeature> _featureImpl = new();
 
     /// <summary>
     ///     Called when the Core is created to initialise it.
     /// </summary>
     public void Initialise(IVaultCoreFeatureResolver featureResolver)
     {
-        AcquireCoreFeatureApiImplementations(featureResolver);
+        AcquireCoreFeatureImplementations(featureResolver);
         InitialiseImpl();
     }
 
@@ -71,40 +71,41 @@ public abstract class VaultCoreBase
     public void ShutDown()
     {
         ShutDownImpl();
+        ReleaseCoreFeatureImplementations();
     }
 
     /// <summary>
-    ///     Gets the Api Implementation for a feature this core uses
+    ///     Gets the Implementation for a feature this core uses
     /// </summary>
-    /// <typeparam name="T">Type of Api implementation to get (should be a type inheriting from IVaultCoreFeature)</typeparam>
-    /// <returns>Api implementation</returns>
+    /// <typeparam name="T">Type of feature implementation to get (should be a type inheriting from IVaultCoreFeature)</typeparam>
+    /// <returns>Feature implementation</returns>
     /// <exception cref="InvalidOperationException">
-    ///     Thrown if trying to get Api Implementation for one not acquired when core is initialized
+    ///     Thrown if trying to get a feature Implementation for one not acquired when core is initialized
     /// </exception>
-    public T GetFeatureApi<T>() where T : IVaultCoreFeature
+    public T GetFeatureImplementation<T>() where T : IVaultCoreFeature
     {
-        if(_featureApiImpl.TryGetValue(typeof(T), out var apiImpl) == false)
+        if(_featureImpl.TryGetValue(typeof(T), out var featureImpl) == false)
         {
             throw new InvalidOperationException($"Trying to get feature impl that was not acquire at startup: {typeof(T)}");
         }
 
-        return (T)apiImpl;
+        return (T)featureImpl;
     }
 
     /// <summary>
-    ///     Attempts to acquire all the api implementations needed for the feature of this core
+    ///     Attempts to acquire all the feature implementations needed for the feature of this core
     /// </summary>
-    /// <param name="featureResolver">feature api resolver class that can get an api implementation from the frontend</param>
-    /// <exception cref="MissingCoreFeatureApiException">
-    ///     Thrown if featureResolver is unable to acquire an api implementation
+    /// <param name="featureResolver">feature resolver class that can get an feature implementation from the frontend</param>
+    /// <exception cref="MissingCoreFeatureException">
+    ///     Thrown if featureResolver is unable to acquire an feature implementation that is needed by the core
     /// </exception>
-    private void AcquireCoreFeatureApiImplementations(IVaultCoreFeatureResolver featureResolver)
+    private void AcquireCoreFeatureImplementations(IVaultCoreFeatureResolver featureResolver)
     {
         var coreFeatureInterfaces = GetAllCoreFeaturesUsedByCore();
         
         foreach (var featureInterface in coreFeatureInterfaces)
         {
-            if(_featureApiImpl.ContainsKey(featureInterface))
+            if(_featureImpl.ContainsKey(featureInterface))
             {
                 continue;
             }
@@ -113,12 +114,28 @@ public abstract class VaultCoreBase
 
             if(featureImpl == null)
             {
-                throw new MissingCoreFeatureApiException($"Unable to acquire feature implementation needed for Core feature {featureInterface}");
+                throw new MissingCoreFeatureException($"Unable to acquire feature implementation needed for Core feature {featureInterface}");
             }
 
-            _featureApiImpl.Add(featureInterface, featureImpl);
-            
+            _featureImpl.Add(featureInterface, featureImpl);
         }
+        
+        foreach(var feature in _featureImpl)
+        {
+            feature.Value.OnCoreAcquiresFeature(GetType(), feature.Key, coreFeatureInterfaces);
+        }
+    }
+    
+    private void ReleaseCoreFeatureImplementations()
+    {
+        var coreFeatureInterfaces = GetAllCoreFeaturesUsedByCore();
+        
+        foreach(var feature in _featureImpl)
+        {
+            feature.Value.OnCoreAcquiresFeature(GetType(), feature.Key, coreFeatureInterfaces);
+        }
+        
+        _featureImpl.Clear();
     }
     
     public List<Type> GetAllCoreFeaturesUsedByCore()

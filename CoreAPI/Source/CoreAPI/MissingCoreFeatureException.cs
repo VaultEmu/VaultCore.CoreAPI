@@ -3,18 +3,18 @@
 /// <summary>
 /// Exception thrown when a core trys to resolve and core feature and is unable too
 /// </summary>
-public class MissingCoreFeatureApiException : Exception
+public class MissingCoreFeatureException : Exception
 {
-    public MissingCoreFeatureApiException()
+    public MissingCoreFeatureException()
     {
     }
 
-    public MissingCoreFeatureApiException(string message)
+    public MissingCoreFeatureException(string message)
         : base(message)
     {
     }
 
-    public MissingCoreFeatureApiException(string message, Exception inner)
+    public MissingCoreFeatureException(string message, Exception inner)
         : base(message, inner)
     {
     }

@@ -9,10 +9,10 @@ public interface IVaultCoreFeature
     /// <summary>
     /// Callback called by the core during Initialisation when this feature is acquired to be used by the core
     /// </summary>
-    public void OnCoreAcquiresFeature(Type coreType, List<Type> allCoreFeaturesNeeded);
+    public void OnCoreAcquiresFeature(Type coreType, Type featureType, List<Type> allCoreFeaturesNeeded);
     
     /// <summary>
     /// Callback called by the core during Shutdown when this feature is released from use by the core
     /// </summary>
-    public void OnCoreReleasesFeature(Type coreType, List<Type> allCoreFeaturesNeeded);
+    public void OnCoreReleasesFeature(Type coreType, Type featureType, List<Type> allCoreFeaturesNeeded);
 }

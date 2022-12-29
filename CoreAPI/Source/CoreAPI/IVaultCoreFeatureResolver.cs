@@ -5,7 +5,7 @@
 /// </summary>
 public interface IVaultCoreFeatureResolver
 {
-    //Gets the concrete feature Api that implements an interface that derives from IVaultCoreFeature.
-    //Will return null if the feature Api is not provided by the frontend
+    //Gets the concrete feature that implements an interface that derives from IVaultCoreFeature.
+    //Will return null if the feature is not provided by the frontend
     public IVaultCoreFeature? GetCoreFeatureImplementation(Type vaultCoreType);
 }
