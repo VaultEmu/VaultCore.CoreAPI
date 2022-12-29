@@ -98,7 +98,7 @@ public class JsonManifestGenerationBuildTask : Microsoft.Build.Utilities.Task
                 }
                 else
                 {
-                    var coreFeaturesUsedAttributeType = coreFeaturesUsed[0].GetType();
+                    var coreFeaturesUsedAttributeType = coreFeatureAttributes[0].GetType();
                     
                     List<string> coreFeatureTypeNames = new List<string>();
                     
