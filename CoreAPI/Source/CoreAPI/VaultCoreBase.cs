@@ -85,7 +85,7 @@ public abstract class VaultCoreBase
     {
         if(_featureApiImpl.TryGetValue(typeof(T), out var apiImpl) == false)
         {
-            throw new InvalidOperationException($"Trying to get Api impl that was not Acquire at startup: {typeof(T)}");
+            throw new InvalidOperationException($"Trying to get feature impl that was not acquire at startup: {typeof(T)}");
         }
 
         return (T)apiImpl;
@@ -100,10 +100,8 @@ public abstract class VaultCoreBase
     /// </exception>
     private void AcquireCoreFeatureApiImplementations(IVaultCoreFeatureResolver featureResolver)
     {
-        var coreFeatureInterfaces = GetType().GetInterfaces()
-            .Where(x => x.IsAssignableTo(typeof(IVaultCoreFeature)) && x != typeof(IVaultCoreFeature))
-            .ToList();
-
+        var coreFeatureInterfaces = GetAllCoreFeaturesUsedByCore();
+        
         foreach (var featureInterface in coreFeatureInterfaces)
         {
             if(_featureApiImpl.ContainsKey(featureInterface))
@@ -115,11 +113,24 @@ public abstract class VaultCoreBase
 
             if(featureImpl == null)
             {
-                throw new MissingCoreFeatureApiException($"Unable to acquire api implementation needed for Core feature {featureInterface}");
+                throw new MissingCoreFeatureApiException($"Unable to acquire feature implementation needed for Core feature {featureInterface}");
             }
 
             _featureApiImpl.Add(featureInterface, featureImpl);
             
         }
+    }
+    
+    public List<Type> GetAllCoreFeaturesUsedByCore()
+    {
+        var coreFeatureTypes = new List<Type>();
+        
+        var coreFeatureAttributes = GetType().GetCustomAttributes(typeof(VaultCoreUsesFeatureAttribute), true).Cast<VaultCoreUsesFeatureAttribute>().ToList();
+        
+        foreach(var coreFeatureAttribute in coreFeatureAttributes)
+        {
+            coreFeatureTypes.AddRange(coreFeatureAttribute.CoreFeatureTypes);
+        }
+        return coreFeatureTypes.Distinct().ToList();
     }
 }
