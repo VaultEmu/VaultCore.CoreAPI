@@ -8,7 +8,8 @@ namespace VaultCore.BuildTasks;
 
 public class JsonManifestGenerationBuildTask : Microsoft.Build.Utilities.Task
 {
-    private const string I_VAULT_CORE_INTERFACE_NAME = "IVaultCore";
+    private const string VAULT_CORE_BASE_CLASS_NAME = "VaultCoreBase";
+    private const string VAULT_CORE_FEATURE_BASE_INTERFACE_NAME = "IVaultCoreFeature`1";
     private const string VAULT_CORE_DESCRIPTION_ATTRIBUTE_NAME = "VaultCoreDescriptionAttribute";
     
     [Serializable]
@@ -19,14 +20,16 @@ public class JsonManifestGenerationBuildTask : Microsoft.Build.Utilities.Task
         public string EmulatedSystemName;
         public string Version;
         public string CoreClassName;
+        public string[] CoreFeaturesUsed;
 
-        public CoreEntry(string name, string description, string emulatedSystemName, string version, string coreClassName)
+        public CoreEntry(string name, string description, string emulatedSystemName, string version, string coreClassName, string[] coreFeaturesUsed)
         {
             Name = name;
             Description = description;
             EmulatedSystemName = emulatedSystemName;
             Version = version;
             CoreClassName = coreClassName;
+            CoreFeaturesUsed = coreFeaturesUsed;
         }
     }
 
@@ -66,12 +69,12 @@ public class JsonManifestGenerationBuildTask : Microsoft.Build.Utilities.Task
             Assembly assembly = Assembly.LoadFrom(DllOutputPath);
 
             var coreTypes = assembly.GetTypes()
-                .Where(p => p.IsClass && !p.IsAbstract && p.GetInterface(I_VAULT_CORE_INTERFACE_NAME) != null)
+                .Where(p => p.IsClass && !p.IsAbstract && TypeIsChildOfVaultCoreBaseType(p))
                 .ToList();
 
             if(coreTypes.Count == 0)
             {
-                Log.LogMessage(MessageImportance.High, $"No classes implementing {I_VAULT_CORE_INTERFACE_NAME} found.");
+                Log.LogMessage(MessageImportance.High, $"No classes implementing {VAULT_CORE_BASE_CLASS_NAME} found.");
                 return true;
             }
 
@@ -86,11 +89,20 @@ public class JsonManifestGenerationBuildTask : Microsoft.Build.Utilities.Task
 
                 if(descriptionAttribute == null)
                 {
-                    Log.LogError($"Unable to find {VAULT_CORE_DESCRIPTION_ATTRIBUTE_NAME} Attribute on core type {I_VAULT_CORE_INTERFACE_NAME}");
+                    Log.LogError($"Unable to find {VAULT_CORE_DESCRIPTION_ATTRIBUTE_NAME} Attribute on core type {coreType}");
                     continue;
                 }
 
                 var attributeType = descriptionAttribute.GetType();
+                
+                var coreFeatureInterfaces = coreType.GetInterfaces()
+                    .Where(x =>
+                    {
+                        return x.GetInterfaces()
+                            .Any(y => y.IsGenericType && y.GetGenericTypeDefinition().Name == VAULT_CORE_FEATURE_BASE_INTERFACE_NAME);
+                    })
+                    .Select(x => x.Name)
+                    .ToArray();
                 
                 var coreName = attributeType.GetProperty("Name")!.GetValue(descriptionAttribute) as string;
                 var coreDescription = attributeType.GetProperty("Description")!.GetValue(descriptionAttribute) as string;
@@ -123,7 +135,7 @@ public class JsonManifestGenerationBuildTask : Microsoft.Build.Utilities.Task
                 }
 
                 codeEntryData.Add(new CoreEntry(coreName, coreDescription,
-                    coreEmulatedSystemName, coreVersion, coreType.Name));
+                    coreEmulatedSystemName, coreVersion, coreType.Name, coreFeatureInterfaces));
 
                 if(Log.HasLoggedErrors)
                 {
@@ -142,5 +154,21 @@ public class JsonManifestGenerationBuildTask : Microsoft.Build.Utilities.Task
             Log.LogErrorFromException(e, true);
             return false;
         }
+    }
+    
+    private static bool TypeIsChildOfVaultCoreBaseType(Type type)
+    {
+        // return all inherited types
+        var currentBaseType = type.BaseType;
+        while (currentBaseType != null)
+        {
+            if(string.Equals(currentBaseType.Name, VAULT_CORE_BASE_CLASS_NAME))
+            {
+                return true;
+            }
+            currentBaseType = currentBaseType.BaseType;
+        }
+        
+        return false;
     }
 }
