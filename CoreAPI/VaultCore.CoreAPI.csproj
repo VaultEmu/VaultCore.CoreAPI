@@ -30,6 +30,10 @@
         <None Include="PackageAssets\build\**" Pack="True" PackagePath="build\" />
         <None Include="PackageAssets\buildMultiTargeting\**" Pack="True" PackagePath="buildMultiTargeting\" />
     </ItemGroup>
+    
+    <ItemGroup>
+      <Folder Include="Source\FrontendFeatures" />
+    </ItemGroup>
 
     <Target Name="IncludeBuiltTaskLib" BeforeTargets="BeforeBuild">
         <MSBuild Projects="..\BuildTaskLib\VaultCore.BuildTaskLib.csproj" Targets="Restore" />
