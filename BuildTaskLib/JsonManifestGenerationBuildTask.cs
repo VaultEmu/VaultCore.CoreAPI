@@ -104,7 +104,7 @@ public class JsonManifestGenerationBuildTask : Microsoft.Build.Utilities.Task
                     
                     foreach(var coreFeatureAttribute in coreFeatureAttributes)
                     {
-                        var coreFeatureTypes = coreFeaturesUsedAttributeType.GetProperty("Name")!.GetValue(coreFeatureAttribute) as Type[];
+                        var coreFeatureTypes = coreFeaturesUsedAttributeType.GetProperty("CoreFeatureTypes")!.GetValue(coreFeatureAttribute) as Type[];
                         
                         if(coreFeatureTypes == null)
                         {
