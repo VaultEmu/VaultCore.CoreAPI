@@ -108,16 +108,16 @@ public class JsonManifestGenerationBuildTask : Microsoft.Build.Utilities.Task
                         
                         if(coreFeatureTypes == null)
                         {
-                            Log.LogError($"Attribute {VAULT_CORE_USED_FEATURES_ATTRIBUTE_NAME} returned null feature types for {coreType}. Is it set correctly?");
+                            Log.LogError($"Vault Core Used Features Attribute on {coreType} returned null feature types. Is it set correctly?");
                             continue;
                         }
                         
                         foreach(var coreFeature in coreFeatureTypes)
                         {
-                            if(coreFeature.GetInterface(VAULT_CORE_FEATURE_INTERFACE_NAME) != null)
+                            if(coreFeature.GetInterface(VAULT_CORE_FEATURE_INTERFACE_NAME) == null)
                             {
-                                Log.LogError($"Attribute {VAULT_CORE_USED_FEATURES_ATTRIBUTE_NAME} returned feature type {coreFeature} that does not inherit " +
-                                             $"from {VAULT_CORE_FEATURE_INTERFACE_NAME} for {coreType}.");
+                                Log.LogError($"Vault Core Used Features Attribute on {coreType} returned feature type {coreFeature} that does not inherit " +
+                                             $"from {VAULT_CORE_FEATURE_INTERFACE_NAME}.");
                                 continue;
                             }
                             
