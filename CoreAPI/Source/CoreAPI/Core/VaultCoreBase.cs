@@ -6,7 +6,7 @@
 public abstract class VaultCoreBase
 {
     private readonly Dictionary<Type, IVaultCoreFeature> _featureImpl = new();
-    
+
     /// <summary>
     ///     Sets the fixed rate in Ms at which the core should have Update() called. If set to 0 then the core will be called
     ///     as fast as possible
@@ -36,17 +36,12 @@ public abstract class VaultCoreBase
     ///     time since last update (will be a fixed value of (1 / UpdateRateMs) if UpdateRateMs is set to a
     ///     non-zero value)
     /// </param>
-    public void Update(float deltaTime)
-    {
-
-    }
+    public abstract void Update(float deltaTime);
 
     /// <summary>
     ///     Called during Shutdown() and should be implemented by the core to perform any cleanup as needed.
     /// </summary>
     protected abstract void ShutDownCore();
-
-   
 
     /// <summary>
     ///     Called when the Core is created to initialise it.
@@ -56,9 +51,7 @@ public abstract class VaultCoreBase
         AcquireCoreFeatureImplementations(featureResolver);
         InitialiseCore();
     }
-
     
-
     /// <summary>
     ///     Called before the core is destroyed to allow the core to clean up
     /// </summary>
@@ -96,7 +89,7 @@ public abstract class VaultCoreBase
     private void AcquireCoreFeatureImplementations(IVaultCoreFeatureResolver featureResolver)
     {
         var coreFeatureInterfaces = GetAllCoreFeaturesUsedByCore();
-        
+
         foreach (var featureInterface in coreFeatureInterfaces)
         {
             if(_featureImpl.ContainsKey(featureInterface))
@@ -113,35 +106,36 @@ public abstract class VaultCoreBase
 
             _featureImpl.Add(featureInterface, featureImpl);
         }
-        
-        foreach(var feature in _featureImpl)
+
+        foreach (var feature in _featureImpl)
         {
             feature.Value.OnCoreAcquiresFeature(GetType(), feature.Key, coreFeatureInterfaces);
         }
     }
-    
+
     private void ReleaseCoreFeatureImplementations()
     {
         var coreFeatureInterfaces = GetAllCoreFeaturesUsedByCore();
-        
-        foreach(var feature in _featureImpl)
+
+        foreach (var feature in _featureImpl)
         {
             feature.Value.OnCoreReleasesFeature(GetType(), feature.Key, coreFeatureInterfaces);
         }
-        
+
         _featureImpl.Clear();
     }
-    
+
     public List<Type> GetAllCoreFeaturesUsedByCore()
     {
         var coreFeatureTypes = new List<Type>();
-        
+
         var coreFeatureAttributes = GetType().GetCustomAttributes(typeof(VaultCoreUsesFeatureAttribute), true).Cast<VaultCoreUsesFeatureAttribute>().ToList();
-        
-        foreach(var coreFeatureAttribute in coreFeatureAttributes)
+
+        foreach (var coreFeatureAttribute in coreFeatureAttributes)
         {
             coreFeatureTypes.AddRange(coreFeatureAttribute.CoreFeatureTypes);
         }
+
         return coreFeatureTypes.Distinct().ToList();
     }
 }
