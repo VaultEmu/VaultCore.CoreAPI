@@ -6,21 +6,6 @@
 public abstract class VaultCoreBase
 {
     /// <summary>
-    ///     Sets the fixed rate in Ms at which the core should have update() called. If set to 0 then the core will be updated
-    ///     as fast as possible
-    ///     If set to low value, the frontend may call update multiple times to catch up.
-    /// </summary>
-    public virtual float UpdateRateMs => 0;
-
-    /// <summary>
-    ///     If UpdateRateMs is set to a none-zero value, then this controls the number of Update calls the frontend can call to
-    ///     catch up if needed.
-    ///     This can stop the classic "Spiral of death" if your updates take longer then the time needed
-    ///     If set to 0, then no limit is placed on the updates
-    /// </summary>
-    public virtual int maxNumUpdates => 0;
-
-    /// <summary>
     ///     Called during Initialise() and should be implemented by the core to initialise it.
     ///     If Initialization fails, or a needed subsystem cannot be resolved, throw an exception
     /// </summary>
@@ -28,14 +13,11 @@ public abstract class VaultCoreBase
 
     /// <summary>
     ///     Called during Update() and should be implemented by the core to perform updating.
-    ///     Will be called every frame by the frontend unless UpdateRateMs is set to provide a fixed update rate
+    ///     Will be called every frame by the frontend
     /// </summary>
-    /// <param name="deltaTime">
-    ///     time since last update (will be a fixed value of (1 / UpdateRateMs) if UpdateRateMs is set to a
-    ///     non-zero value)
-    /// </param>
+    /// <param name="deltaTime">time since last update</param>
     protected abstract void UpdateImpl(float deltaTime);
-
+    
     /// <summary>
     ///     Called during Shutdown() and should be implemented by the core to perform any cleanup as needed.
     /// </summary>
@@ -53,18 +35,14 @@ public abstract class VaultCoreBase
     }
 
     /// <summary>
-    ///     Called to update the Core. Will be called every frame by the frontend unless UpdateRateMs is set to provide a fixed
-    ///     update rate
+    ///     Called to update the Core. Will be called every frame by the frontend
     /// </summary>
-    /// <param name="deltaTime">
-    ///     time since last update (will be a fixed value of (1 / UpdateRateMs) if UpdateRateMs is set to a
-    ///     non-zero value)
-    /// </param>
+    /// <param name="deltaTime">time since last update</param>
     public void Update(float deltaTime)
     {
         UpdateImpl(deltaTime);
     }
-
+    
     /// <summary>
     ///     Called before the core is destroyed to allow the core to clean up
     /// </summary>
@@ -102,7 +80,7 @@ public abstract class VaultCoreBase
     private void AcquireCoreFeatureImplementations(IVaultCoreFeatureResolver featureResolver)
     {
         var coreFeatureInterfaces = GetAllCoreFeaturesUsedByCore();
-        
+
         foreach (var featureInterface in coreFeatureInterfaces)
         {
             if(_featureImpl.ContainsKey(featureInterface))
@@ -119,35 +97,40 @@ public abstract class VaultCoreBase
 
             _featureImpl.Add(featureInterface, featureImpl);
         }
-        
-        foreach(var feature in _featureImpl)
+
+        foreach (var feature in _featureImpl)
         {
             feature.Value.OnCoreAcquiresFeature(GetType(), feature.Key, coreFeatureInterfaces);
         }
     }
-    
+
     private void ReleaseCoreFeatureImplementations()
     {
         var coreFeatureInterfaces = GetAllCoreFeaturesUsedByCore();
-        
-        foreach(var feature in _featureImpl)
+
+        foreach (var feature in _featureImpl)
         {
             feature.Value.OnCoreReleasesFeature(GetType(), feature.Key, coreFeatureInterfaces);
         }
-        
+
         _featureImpl.Clear();
     }
-    
+
+    /// <summary>
+    ///     Returns a list of all the feature types used by this core
+    /// </summary>
+    /// <returns>A list of feature types used by this core</returns>
     public List<Type> GetAllCoreFeaturesUsedByCore()
     {
         var coreFeatureTypes = new List<Type>();
-        
+
         var coreFeatureAttributes = GetType().GetCustomAttributes(typeof(VaultCoreUsesFeatureAttribute), true).Cast<VaultCoreUsesFeatureAttribute>().ToList();
-        
-        foreach(var coreFeatureAttribute in coreFeatureAttributes)
+
+        foreach (var coreFeatureAttribute in coreFeatureAttributes)
         {
             coreFeatureTypes.AddRange(coreFeatureAttribute.CoreFeatureTypes);
         }
+
         return coreFeatureTypes.Distinct().ToList();
     }
 }
