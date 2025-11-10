@@ -73,7 +73,8 @@ public abstract class VaultCoreBase
     {
         if(_featureImpl.TryGetValue(typeof(T), out var featureImpl) == false)
         {
-            throw new InvalidOperationException($"Trying to get feature impl that was not acquire at startup: {typeof(T)}");
+            throw new InvalidOperationException($"Trying to get feature impl that was not acquire at startup: {typeof(T)}," +
+                                                $"Was the feature added to the VaultCoreUsesFeature attribute?");
         }
 
         return (T)featureImpl;
