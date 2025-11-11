@@ -39,7 +39,7 @@
         </MSBuild>
         <Message Importance="high" Text="BuildTaskLib Built: Target Folder -&gt; %(BuildOutput.RootDir)%(BuildOutput.Directory)" />
         <ItemGroup>
-            <None Include="%(BuildOutput.RootDir)%(BuildOutput.Directory)\**" Pack="True" PackagePath="tasks\" />
+            <None Include="%(BuildOutput.RootDir)%(BuildOutput.Directory)\**" Pack="True" PackagePath="build\" />
         </ItemGroup>
     </Target>
 </Project>

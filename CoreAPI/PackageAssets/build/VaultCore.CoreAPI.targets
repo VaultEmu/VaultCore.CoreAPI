@@ -5,9 +5,9 @@
     </PropertyGroup>
     
     <UsingTask TaskName="VaultCore.BuildTasks.JsonManifestGenerationBuildTask"
-               AssemblyFile="$(MSBuildThisFileDirectory)..\tasks\VaultCore.BuildTaskLib.dll"/>
+               AssemblyFile="$(MSBuildThisFileDirectory)..\build\VaultCore.BuildTaskLib.dll"/>
 
-    <Target Name="Create Json Manifest" AfterTargets="Build">
+    <Target Name="Create Json Manifest" AfterTargets="AfterBuild">
         <JsonManifestGenerationBuildTask DllOutputPath="$(TargetPath)"/>
     </Target>
 </Project>
