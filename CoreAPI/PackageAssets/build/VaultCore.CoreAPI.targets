@@ -11,10 +11,17 @@
         <JsonManifestGenerationBuildTask DllPath="$(TargetPath)" ManifestOutputPath="$(IntermediateOutputPath)$(TargetName)_Manifest.json"/>
     </Target>
     
-    <Target Name="CopyCoreJsonManifestToOutput" AfterTargets="CreateCoreJsonManifest" >
+    <Target Name="CopyCoreJsonManifestToBuildOutput" AfterTargets="CreateCoreJsonManifest" >
         <ItemGroup>
             <GeneratedManifests Include="$(IntermediateOutputPath)$(TargetName)_Manifest.json"/>
         </ItemGroup>
         <Copy SourceFiles="@(GeneratedManifests)" DestinationFolder="$(OutDir)" />
+    </Target>
+
+    <Target Name="CopyCoreJsonManifestToPublishOutput" AfterTargets="Publish;CreateCoreJsonManifest" >
+        <ItemGroup>
+            <GeneratedManifests Include="$(IntermediateOutputPath)$(TargetName)_Manifest.json"/>
+        </ItemGroup>
+        <Copy SourceFiles="@(GeneratedManifests)" DestinationFolder="$(PublishDir)" />
     </Target>
 </Project>
