@@ -179,6 +179,7 @@ public class JsonManifestGenerationBuildTask : Microsoft.Build.Utilities.Task
 
             string json = JsonSerializer.Serialize(codeEntryData, new JsonSerializerOptions() { WriteIndented = true, IncludeFields = true });
             File.WriteAllText(ManifestOutputPath, json);
+            Log.LogMessage(MessageImportance.High, $"Json Manifest Created at {ManifestOutputPath}...");
 
             return true;
         }
