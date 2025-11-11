@@ -7,7 +7,7 @@
     <UsingTask TaskName="VaultCore.BuildTasks.JsonManifestGenerationBuildTask"
                AssemblyFile="$(MSBuildThisFileDirectory)..\build\VaultCore.BuildTaskLib.dll"/>
 
-    <Target Name="CreateCoreJsonManifest" AfterTargets="AfterCompile" BeforeTargets="GetCopyFilesToOutputDirectoryItems">
+    <Target Name="CreateCoreJsonManifest" AfterTargets="CopyFilesToOutputDirectory" BeforeTargets="GetCopyFilesToOutputDirectoryItems">
         <JsonManifestGenerationBuildTask DllPath="$(TargetPath)" ManifestOutputPath="$(IntermediateOutputPath)$(TargetName)_Manifest.json"/>
     </Target>
     
