@@ -35,7 +35,7 @@ public class JsonManifestGenerationBuildTask : Microsoft.Build.Utilities.Task
     }
 
     [Required]
-    public string DllOutputPath { get; set; } = null!;
+    public string DllPath { get; set; } = null!;
 
     [Required]
     public string ManifestOutputPath { get; set; } = null!;
@@ -44,9 +44,9 @@ public class JsonManifestGenerationBuildTask : Microsoft.Build.Utilities.Task
     {
         try
         {
-            if(string.IsNullOrEmpty(DllOutputPath))
+            if(string.IsNullOrEmpty(DllPath))
             {
-                Log.LogError("DllOutputPath not set");
+                Log.LogError("DllPath not set");
                 return false;
             }
             
@@ -56,18 +56,18 @@ public class JsonManifestGenerationBuildTask : Microsoft.Build.Utilities.Task
                 return false;
             }
             
-            if(File.Exists(DllOutputPath) == false)
+            if(File.Exists(DllPath) == false)
             {
-                Log.LogError($"Unable to find File at {DllOutputPath}");
+                Log.LogError($"Unable to find File at {DllPath}");
                 return false;
             }
 
-            Log.LogMessage(MessageImportance.High, $"Creating Json Manifest for Cores in {Path.GetFileName(DllOutputPath)}...");
+            Log.LogMessage(MessageImportance.High, $"Creating Json Manifest for Cores in {Path.GetFileName(DllPath)}...");
 
             var codeEntryData = new List<CoreEntry>();
 
             //Load the assembly
-            Assembly assembly = Assembly.LoadFrom(DllOutputPath);
+            Assembly assembly = Assembly.LoadFrom(DllPath);
 
             var coreTypes = assembly.GetTypes()
                 .Where(p => p.IsClass && !p.IsAbstract && TypeIsChildOfVaultCoreBaseType(p))

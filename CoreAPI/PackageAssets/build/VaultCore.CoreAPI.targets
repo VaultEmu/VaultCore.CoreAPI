@@ -10,7 +10,9 @@
     <Target Name="Create Json Manifest" AfterTargets="AfterBuild">
         <JsonManifestGenerationBuildTask DllPath="$(TargetPath)" ManifestOutputPath="$(IntermediateOutputPath)$(TargetName)_Manifest.json"/>
         <ItemGroup>
-            <None Include="$(IntermediateOutputPath)$(TargetName)_Manifest.json" TargetPath="$(TargetName)_Manifest.json" CopyToOutputDirectory="Always"/>
+            <Content Include="$(IntermediateOutputPath)$(TargetName)_Manifest.json">
+                <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+            </Content>
         </ItemGroup>
     </Target>
 </Project>
