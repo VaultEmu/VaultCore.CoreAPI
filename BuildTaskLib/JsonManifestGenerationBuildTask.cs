@@ -34,14 +34,12 @@ public class JsonManifestGenerationBuildTask : Microsoft.Build.Utilities.Task
         }
     }
 
-    private string _dllOutputPath = null!;
+    [Required]
+    public string DllOutputPath { get; set; } = null!;
 
     [Required]
-    public string DllOutputPath
-    {
-        get => _dllOutputPath;
-        set => _dllOutputPath = value;
-    }
+    public string ManifestOutputPath { get; set; } = null!;
+
     public override bool Execute()
     {
         try
@@ -51,7 +49,13 @@ public class JsonManifestGenerationBuildTask : Microsoft.Build.Utilities.Task
                 Log.LogError("DllOutputPath not set");
                 return false;
             }
-
+            
+            if(string.IsNullOrEmpty(ManifestOutputPath))
+            {
+                Log.LogError("ManifestOutputPath not set");
+                return false;
+            }
+            
             if(File.Exists(DllOutputPath) == false)
             {
                 Log.LogError($"Unable to find File at {DllOutputPath}");
@@ -59,10 +63,6 @@ public class JsonManifestGenerationBuildTask : Microsoft.Build.Utilities.Task
             }
 
             Log.LogMessage(MessageImportance.High, $"Creating Json Manifest for Cores in {Path.GetFileName(DllOutputPath)}...");
-
-            var jsonManifestOutput = Path.Combine(
-                Path.GetDirectoryName(DllOutputPath)!,
-                Path.GetFileNameWithoutExtension(DllOutputPath) + "_Manifest.json");
 
             var codeEntryData = new List<CoreEntry>();
 
@@ -178,7 +178,7 @@ public class JsonManifestGenerationBuildTask : Microsoft.Build.Utilities.Task
             }
 
             string json = JsonSerializer.Serialize(codeEntryData, new JsonSerializerOptions() { WriteIndented = true, IncludeFields = true });
-            File.WriteAllText(jsonManifestOutput, json);
+            File.WriteAllText(ManifestOutputPath, json);
 
             return true;
         }
