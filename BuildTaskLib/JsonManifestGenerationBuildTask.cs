@@ -39,11 +39,16 @@ public class JsonManifestGenerationBuildTask : Microsoft.Build.Utilities.Task
 
     [Required]
     public string ManifestOutputPath { get; set; } = null!;
+    
+    [Output]
+    public bool ManifestGenerated { get; set; }
 
     public override bool Execute()
     {
         try
         {
+            ManifestGenerated = false;
+            
             if(string.IsNullOrEmpty(DllPath))
             {
                 Log.LogError("DllPath not set");
@@ -180,7 +185,7 @@ public class JsonManifestGenerationBuildTask : Microsoft.Build.Utilities.Task
             string json = JsonSerializer.Serialize(codeEntryData, new JsonSerializerOptions() { WriteIndented = true, IncludeFields = true });
             File.WriteAllText(ManifestOutputPath, json);
             Log.LogMessage(MessageImportance.High, $"Json Manifest Created at {ManifestOutputPath}...");
-
+            ManifestGenerated = true;
             return true;
         }
         catch (Exception e)

@@ -9,16 +9,17 @@
 
     <Target Name="CreateCoreJsonManifest" AfterTargets="AfterBuild" >
         <JsonManifestGenerationBuildTask DllPath="$(TargetPath)" ManifestOutputPath="$(IntermediateOutputPath)$(TargetName)_Manifest.json"/>
+        <Output TaskParameter="ManifestGenerated" PropertyName="JsonManifestGenBuildTaskManifestGenerated" />
     </Target>
     
-    <Target Name="CopyCoreJsonManifestToBuildOutput" AfterTargets="CreateCoreJsonManifest" >
+    <Target Name="CopyCoreJsonManifestToBuildOutput" Condition="'$(JsonManifestGenBuildTaskManifestGenerated)' == 'true'" AfterTargets="CreateCoreJsonManifest" >
         <ItemGroup>
             <GeneratedManifests Include="$(IntermediateOutputPath)$(TargetName)_Manifest.json"/>
         </ItemGroup>
         <Copy SourceFiles="@(GeneratedManifests)" DestinationFolder="$(OutDir)" />
     </Target>
 
-    <Target Name="CopyCoreJsonManifestToPublishOutput" AfterTargets="Publish;CreateCoreJsonManifest" >
+    <Target Name="CopyCoreJsonManifestToPublishOutput" Condition="'$(JsonManifestGenBuildTaskManifestGenerated)' == 'true'" AfterTargets="Publish;CreateCoreJsonManifest" >
         <ItemGroup>
             <GeneratedManifests Include="$(IntermediateOutputPath)$(TargetName)_Manifest.json"/>
         </ItemGroup>
